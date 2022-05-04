@@ -1,4 +1,5 @@
 # canariasjs-lerna-workshop
+
 ## Introducción
 
 Texto de introducción
@@ -12,7 +13,8 @@ Despues veremos como podemos interacturar con lerna mediante los distintos coman
 Tambien veremos que no sera necesario utilizar un unico bundler, ya que podremos utilizar uno por cada proyecto.
 
 1 Init Repo!
-_________________
+
+---
 
 Primero de todo lo instalaremos globalmente en nuestro npm (o yarn)
 
@@ -32,25 +34,38 @@ Luego iniciaremos lerna con el siguiente commando:
 lerna init
 ```
 
+Por ultimo a;adiremos un gitignore bastante basico:
+
+```bash
+touch .gitignore
+```
+
+Y a;adiremos lo siguiente en dicho gitignore:
+
+```
+node_modules
+dist
+```
+
 Esto nos deberia crear la sigueinte estructura:
 
 ```
 lerna-repo/
   packages/
   package.json
+  .gitignore
   lerna.json
 ```
 
 2. Entendiendo la configuracion de lerna
-_________________
+
+---
 
 Si entramos a lerna.json veremos que nos ha creado un sencillo fichero de configuracion
 
 ```json
 {
-  "packages": [
-    "packages/*"
-  ],
+  "packages": ["packages/*"],
   "version": "0.0.0"
 }
 ```
@@ -73,12 +88,13 @@ Para los usuarios de yarn, podeis cambiar el cliente predeterminado con el cual 
 ```
 
 3. Crear nuestro primer paquete
-_________________
+
+---
 
 En lerna tenemos varias opciones de agregar paquetes a nuestro proyecto:
 
- - Crear un paquete nuevo "a mano".
- - Utilizar los comandos de lerna para agregar paquetes.
+- Crear un paquete nuevo "a mano".
+- Utilizar los comandos de lerna para agregar paquetes.
 
 Primero de todo veremos un ejemplo "a mano":
 
@@ -111,8 +127,8 @@ lerna create --help
 
 Vemos que por ahora nos interesa lo siguiente de la opcion create:
 
- - name: nombre del paquete que vamos a crear.
- - --yes: nos permite omitir la pregunta de confirmacion.
+- name: nombre del paquete que vamos a crear.
+- --yes: nos permite omitir la pregunta de confirmacion.
 
 Por ahora vamos a omitir la opcion de loc ya que utilizaremos la primera configuracion de paquetes en lerna.json.
 
@@ -122,7 +138,7 @@ lerna create mySecondPackage -y
 
 Veremos que este comando nos crea scaffolding basicos para nuestro paquete con tests
 
-ahora vamos a ver cuantos paquetes nos detecta lerna:   
+ahora vamos a ver cuantos paquetes nos detecta lerna:
 
 ```bash
 lerna list
@@ -133,14 +149,81 @@ lerna notice cli v4.0.0
 myfirstpackage
 mySecondPackage
 lerna success found 2 packages
+```
+
+4. Agregar bundlers
+
+---
+
+Para hacerlo mas real vamos agregar unos bundlers a nuestros paquetes.
+
+En mi caso voy a utilizar rollup y vite. Pero sois libres de utilizar cualquier otro bundler que vosotros quieras.
+
+Primero a;adiremos el rollap en myFirstPackage junto con algunos paquetes que necesitaremos:
+
+```
+cd packages/myFirstPackage
+npm install --save-dev rollup @rollup/plugin-typescript @rollup/plugin-commonjs
+```
+
+Ahora vamos los ficheros de configuracion necesarios para que typescript y rollup funcionen:
+
+- Creamos tsconfig.json con lo siguiente:
+
+```json
+{
+  "compilerOptions": {
+    "declaration": true,
+    "module": "esnext",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "outDir": "./dist"
+  },
+  "exclude": ["dist", "node_modules"],
+  "include": ["src/**/*"]
+}
+```
+
+- Creamos rollup.config.js con lo siguiente:
+
+```js
+import typescript from "@rollup/plugin-typescript";
+import commonjs from "@rollup/plugin-commonjs";
+
+export default {
+  input: "src/index.ts",
+  output: {
+    sourcemap: true,
+    dir: "dist",
+    format: "cjs",
+  },
+  plugins: [commonjs(), typescript()],
+};
+```
+
+Como vereis nos sigue faltando el propio codigo! sino no tenemos nada del que hacer el bundle!
+
+Crearemos un fichero src/index.ts con lo siguiente:
+
+```ts
+export function Hello(name: string) {
+  console.log(`Hello Mr: ${name}`);
+}
+```
+
+Y no podemos olvidarnos de actualizar el package.json para que lanze el comando esperado!
+
+ ```json
+  "scripts": {
+    "build": "rollup -c"
+  }
+  ```
+
+
+x.a. A;adir turbo repo?
+_________________
 ````
-
- x. Migracion a lerna-lite
-_________________
-
-Como muchos abreis visto en la pagina oficial de lerna, este a pasado a estar "fuera de servicio" y por lo tanto tiene bastantes dependencias desactualizadas. Pero gracias a la enorme comunidad de open source, podemos migrar facilmente a una herramienta bastante mas actualizada sin que nos afecte:
-
-https://github.com/ghiscoding/lerna-lite#migration-for-lerna-users
-
- x.a. A;adir turbo repo?
-_________________
