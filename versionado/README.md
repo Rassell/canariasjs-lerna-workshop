@@ -1,6 +1,10 @@
 # canariasjs-lerna-workshop
 
-## Como versionar nuestro producto de forma automática usando Git y Azure DevOps (o el sistema que más rabia nos da)
+## Prerequisitos
+1. Tener instalado NodeJS (v8.9 o superior)
+
+
+## Como versionar nuestro producto de forma automática usando Git  (o el sistema que más rabia nos da)
 ### Introducción
 
 Hoy en día muchos equipos de desarrollo se organizan en mayor o menor medida haciendo uso de una metodología agile, siguen/seguimos una aproximación a Scrum en la que el proyecto/producto que vamos a entregar lo separamos por sprints de una duración de 2/3/4 semanas dependiendo del equipo. En ese tiempo el equipo realiza las Tareas que se le han asignado en un sprint, estas tareas están vinculado a una Historia de Usuario, y esta Historia de Usuario está asociada a una Feature del producto.
@@ -49,4 +53,81 @@ Standar Version es una utilidad para hacer versionado usando semver, o versionad
 5.- Crea un nuevo "Tag" con el nuevo número de versión (opcional y dependiendo del sistema de branching que tenga el equipo, aunque siempre es bueno tener esto marcado para poder fixear errores en cada versión de una forma sencilla)
 
 ###  Manos a la obra
+
+Vamos a utilizar un ejemplo un proyecto "vacio", con solamente el típico "scaffoding" del mismo. En mi caso he optado por utilizar un template de React.
+
+Abrimos un terminal y ejecutamos la siguiente instrucción:
+
+```bash
+npx create-react-app my-app --template typescript
+```
+Ahora añadiremos Standard versión a nuestro proyecto
+```bash
+npm install --save-dev standard-version
+```
+Ahora, nosotros modificaremos la sección de script en package.json quedando de la siguiente forma.
+```bash
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "release": "standard-version"
+  }
+```
+Ahora quedaremos la primera release, para ello la indiraremos unos parametros opcionales
+```bash
+npm run release -- --first-release
+```
+Al ejecutarlo veremos la siguiente imagen
+![imagen release ](/images/firsrelease.PNG)
+
+Si ahora nosotros vamos a nuestro proyecto vemos que nos ha creado un fichero Changelog.md en el que tiene la siguiente estructura:
+
+version que esta en nuestro caso 0.1.0 y la fecha en la que lanzamos la release. Como aun no tenemos ningun comit no hay mucho más.
+
+Ahora si empezamos a realizar commits en nuestra repositorio dependiendo de la estructura que tengamos en nuestro mensajes en el changelog veremos una cosa u otra.
+
+Ejemplos de mensajes:
+- Para un fix
+```bash
+fix: prevent the application from crashing
+```
+- Para una nueva Feature
+```bash
+feat: add the possibility to filter posts
+```
+- Para breaking changes
+```bash
+fix!: change the way that the posts are filtered to deal with a bug
+```
+o
+```bash
+feat: add pagination to the posts endpoint
+BREAKING CHANGE: now the result might not contain all posts
+```
+Podemos usar diferentes tipos de commits, como por ejemplo:
+test – cuando modificamos test existentes o añadimos nuevos
+refactor – Aplicamos un refactor y cambiamos algo de nuestro código.
+docs – modificamos la documentación del mismo
+chore – tareas rutinarias, como la actualización de dependencias
+
+Una de las cosas interesantes que se hace en el momento que nosotros hacemos la release es que crea un tag con esta versión. De tal forma que si nosotros ponemos la siguiente instrucción podemos visualizar el código que tiene estos cambios.
+```bash
+git tag -n
+```
+
+Ahora nosotros cada vez que queramos realizar algun cambio tendremos que lanzar el comando Release y con esto tendremos un ChangeLog "aseadito".
+
+###  Mundo real
+Todo lo que hemos visto esta muy bien pero al final, la gran mayoria no trabaja solo sino que trabaja en un flujo de trabajo siguiendo la metodología que mejor se adapte a su equipo.
+
+
+
+
+
+
+
+
+
 
