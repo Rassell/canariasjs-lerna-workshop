@@ -607,4 +607,14 @@ y con esto ya tendremos nuestro div con hello world!
 10. Versionado de lerna
 ___
 
-En lerna tenemos varios modos de versionar, o todos juntos de la mano (ej: proyecto de firebase) o cada paquete por separado
+En lerna tenemos varios modos de versionar, o todos juntos de la mano (ej: proyecto de firebase) o cada paquete por separado. 
+
+Para probarlo vamos a lanzar el comando de lerna para versionar (tener en cuenta que si detecta cambios en ficheros no indicados a ignorar no nos dejara hacer commit):
+
+```bash
+lerna version
+```
+
+en este caso como estoy editando el fichero readme, pongo el flag para que me ignore este fichero
+
+
