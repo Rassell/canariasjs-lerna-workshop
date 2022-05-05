@@ -619,7 +619,30 @@ Este comando nos preguntara que version queremos poner (como en lerna.json tiene
 
 Acto seguido nos ense;ara los paquetes que va a modificar y si queremos hacerlo, en nuestro caso decimos que si
 
-Como vemos nos ha modificado los package.json con la version esperada.
-En este casoestamos usando el versionado general, es decir da igual si modificamos 1 que mil, todos subiran de version. para verlo, vamos a cambiar algo de mySecondPackage, myFirstPackage no tiene dependencias por lo tanto no subira, pero al hacer un versionado general, cambiara.
+Como vemos nos ha modificado los package.json con la version esperada, tanto los package.json como las dependencias.
 
-Nos vamos a mySecondPackage y modificamos algo dentro del index.tsx, hacemos commit de los cambios y lanzamos lerna version
+En este caso estamos usando el versionado general, es decir da igual si modificamos 1 que mil, todos subiran de version. para verlo, vamos a cambiar algo de mySecondPackage, myFirstPackage no tiene dependencias por lo tanto no subira, pero al hacer un versionado general, cambiara.
+
+Nos vamos a mySecondPackage y modificamos algo dentro del index.tsx, hacemos commit de los cambios y lanzamos lerna version:
+
+```bash
+info cli using local version of lerna
+lerna notice cli v4.0.0
+lerna info current version 0.0.1
+lerna info Looking for changed packages since v0.0.1
+? Select a new version (currently 0.0.1) Patch (0.0.2)
+
+Changes:
+ - myfirstpackage: 0.0.1 => 0.0.2
+ - mySecondPackage: 0.0.1 => 0.0.2
+
+? Are you sure you want to create these versions? (ynH)
+```
+
+como vemos nos ha modificados todos da igual que haya sido modificado o no
+
+esto puede ser cambiado especificando el flag `independent` en lerna.json
+
+para ello vamos a lerna.json y cambiamos el version de 0.0.2 a independent.
+
+Y lo mismo, nos vamos a mySecondPackage, volvemos a cambiar algo, commit y lerna build
