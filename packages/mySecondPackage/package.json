@@ -6,6 +6,7 @@
   "author": "Gonzalo Soriano <sordesos@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "myfirstpackage": "^1.0.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
   },

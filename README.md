@@ -427,12 +427,62 @@ function App() {
       <header className="App-header">
 ```
 
-x.a. A;adir turbo repo?
+6. Bootstrap
+___
 
----
+Ahora empezaremos a liarnos con instalacion de paquetes y linkearlos entre ellos.
 
+Para hacer un ejemplo rapido vamos a ejecutar el siguiente comando
+
+```bash
+lerna add myfirstpackage --scope=mySecondPackage
 ```
 
+Aunque no sea el susodicho (bootstrap) podemos ver que se ejecuta automaticamente ya que lo reconoce como paquete ya que nos ha puesto la version actual en el package.json peeeeero, si no vamos a node_modules veremos que lerna lo a detectado como un paquete nuestro y por lo tanto es un symlink
+
+7. Hoist
+___
+
+Otra cosa buena con la que nos permite jugar lerna es con el tema del hoisting. Es una sencilla opcion (pero hay que tratarla con cuidado) que nos permite instalar las dependencias de una vez en vez de scoped por asi decirlo.
+
+Para ello vamos a modificar el archivo lerna.json y vamos a;adir la siguiente opcion
+
+```json
+"hoist": true,
 ```
 
+Tambien vamos a borrar las carpetas node_modules y los ficheros -lock.json, a partir de ahora vamos a dejar a lerna ocuparse de las dependencias
+
+y una vez modificado el fichero y borrada la carpeta de node_modules vamos a lanzar el comando en la carpeta raiz
+
+```bash
+lerna bootstrap
+```
+
+esta nos deberia resultar en lo siguiente:
+
+```bash
+info cli using local version of lerna
+lerna notice cli v4.0.0
+lerna info Bootstrapping 2 packages
+lerna info Installing external dependencies
+lerna info hoist Installing hoisted dependencies into root
+lerna info hoist Pruning hoisted dependencies
+lerna info hoist Finished pruning hoisted dependencies
+lerna info hoist Finished bootstrapping root
+lerna info Symlinking packages and binaries
+lerna success Bootstrapped 2 packages
+```
+
+Si ejecutamos nuestro comando de build veremos que todo sigue funcionando correctamente:
+
+```bash
+npm run build
+```
+
+y para terminar de confirmar que funciona correctamente ejecutaremos nuestro test site:
+
+```bash
+cd testsite
+npm run dev
 ```
