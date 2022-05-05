@@ -661,4 +661,6 @@ Changes:
 
 Como vemos solo hace cambios en el paquete "esperado", esto va a question de gustos, la que mas rabia os de!
 
+Ahora vamos a por el siguiente y vamos a probar los  --conventional-commits!
+
 
