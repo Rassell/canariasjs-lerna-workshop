@@ -13,9 +13,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/index.tsx"),
-      name: "lernaWorkshop",
-      formats: ["es", "umd"],
-      fileName: (format) => `lernaWorkshop.${format}.js`,
+      name: "index",
+      formats: ["umd"],
+      fileName: () => `index.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom"],

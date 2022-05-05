@@ -310,15 +310,21 @@ Ahora vamos los ficheros de configuracion necesarios para que typescript y rollu
 import react from "@vitejs/plugin-react";
 import * as path from "node:path";
 import { defineConfig } from "vite";
+import dts from "vite-plugin-dts";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    dts({
+      insertTypesEntry: true,
+    }),
+  ],
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/index.tsx"),
-      name: "lernaWorkshop",
-      formats: ["es", "umd"],
-      fileName: (format) => `lernaWorkshop.${format}.js`,
+      name: "index",
+      formats: ["umd"],
+      fileName: () => `index.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom"],
@@ -358,13 +364,247 @@ dist/my-lib.es.js   1.35 KiB / gzip: 0.69 KiB
 dist/my-lib.umd.js   1.35 KiB / gzip: 0.78 KiB
 ```
 
+Y por ultimo para terminar de pulir nuestros paques vamos a a;adir/cambiar estas definiciones del package.json
 
-x.a. A;adir turbo repo?
-
----
-
+```json
+  "main": "dist/{nombreDelPaquete}.js",
+  "types": "dist/{nombreDelPaquete}.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
 ```
 
+5. Probando nuestros paquetes
+___
+
+Ahora que ya tenemos nuestros paquetes creados vamos a probarlos para ver que todo funciona como esperamos.
+Para ello vamos a crear con vite un proyecto llamado testsite donde vamos a probar nuestros paquetes.
+
+```bash
+npm create vite@latest testsite -- --template react-ts
 ```
 
+Y ahora, mientras no tengamos los paquetes publicados vamos a a;adirlos de manera local, para ello ejecutaremos lo siguiente:
+
+```bash
+cd testsite
+npm i
+npm i --save ../packages/myFirstPackage ../packages/mySecondPackage
 ```
+
+con esto deberiamos de ver nuestros paquetes a;adidos en las dependencias de nuestro proyecto:
+
+```json
+"myfirstpackage": "file:../packages/myFirstPackage",
+"mySecondPackage": "file:../packages/mySecondPackage",
+```
+
+Y por ultimo como hemos puestos nuestros paquetes como umd (a vite no le molan), los a;adiremos en la config de vite
+
+```ts
+...
+optimizeDeps: {
+  include: ["myfirstpackage", "mySecondPackage"],
+},
+...
+```
+
+y con esto podremos utilizarlos tranquilamente en nuestra App.tsx:
+
+```tsx
+import { Counter } from "mySecondPackage";
+import { Hello } from "myfirstpackage";
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  Hello(count.toString());
+
+  return (
+    <div className="App">
+      <Counter />
+      <header className="App-header">
+```
+
+6. Bootstrap
+___
+
+Ahora empezaremos a liarnos con instalacion de paquetes y linkearlos entre ellos.
+
+Para hacer un ejemplo rapido vamos a ejecutar el siguiente comando
+
+```bash
+lerna add myfirstpackage --scope=mySecondPackage
+```
+
+Aunque no sea el susodicho (bootstrap) podemos ver que se ejecuta automaticamente ya que lo reconoce como paquete ya que nos ha puesto la version actual en el package.json peeeeero, si no vamos a node_modules veremos que lerna lo a detectado como un paquete nuestro y por lo tanto es un symlink
+
+7. Hoist
+___
+
+Otra cosa buena con la que nos permite jugar lerna es con el tema del hoisting. Es una sencilla opcion (pero hay que tratarla con cuidado) que nos permite instalar las dependencias de una vez en vez de scoped por asi decirlo.
+
+Para ello vamos a modificar el archivo lerna.json y vamos a;adir la siguiente opcion
+
+```json
+"hoist": true,
+```
+
+Tambien vamos a borrar las carpetas node_modules y los ficheros -lock.json, a partir de ahora vamos a dejar a lerna ocuparse de las dependencias
+
+y una vez modificado el fichero y borrada la carpeta de node_modules vamos a lanzar el comando en la carpeta raiz
+
+```bash
+lerna bootstrap
+```
+
+esta nos deberia resultar en lo siguiente:
+
+```bash
+info cli using local version of lerna
+lerna notice cli v4.0.0
+lerna info Bootstrapping 2 packages
+lerna info Installing external dependencies
+lerna info hoist Installing hoisted dependencies into root
+lerna info hoist Pruning hoisted dependencies
+lerna info hoist Finished pruning hoisted dependencies
+lerna info hoist Finished bootstrapping root
+lerna info Symlinking packages and binaries
+lerna success Bootstrapped 2 packages
+```
+
+Si ejecutamos nuestro comando de build veremos que todo sigue funcionando correctamente:
+
+```bash
+npm run build
+```
+
+y para terminar de confirmar que funciona correctamente ejecutaremos nuestro test site:
+
+```bash
+cd testsite
+npm run dev
+```
+
+8. Testing
+___
+
+Ahora que ya tenemos nuestros componentes linkeados, vemos que todo funciona y encima no reinstalamos dependencias a lo loco. Todo va de lujooooo.
+Pero eh!? nos falta testear! para ello vamos a utilizar a nuestro amigo Jest para facilitarnos la tarea, para ello instalaremos lo siguiente en el root:
+
+```bash
+npm i --save-dev jest ts-jest jest-environment-jsdom @types/jest @testing-library/react @testing-library/jest-dom
+npx ts-jest config:init
+```
+
+esta configuracion inicial no esta mal pero necesitaremos modificarla un poco:
+
+```js
+/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+module.exports = {
+  preset: "ts-jest",
+  testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["@testing-library/jest-dom/extend-expect"],
+  globals: {
+    "ts-jest": {
+      tsconfig: "<rootDir>/packages/mySecondPackage/tsconfig.json",
+    },
+  },
+};
+```
+
+POR FAVOR crear un tsconfig a nivel de solucion y extender los paquetes de ese para entornos reales!
+
+Modificamos el fichero package.json para que ejecute los tests a;adiendo el siguiente commando:
+
+```json
+"test": "jest",
+```
+
+Y con esto nos vamos a `packages/mySecondPackage/__tests__`, recordar que esto ya nos lo creo lerna y renombramos el fichero que tenemos por *.tsx
+
+A;adimos lo siguiente:
+
+```tsx
+import { render, screen } from "@testing-library/react";
+
+import { Counter } from "../src/index";
+
+describe("<Counter />", () => {
+  test("should display a hello world", async () => {
+    render(<Counter />);
+
+    expect(screen.getByText(/hello world/i)).toBeInTheDocument();
+  });
+});
+```
+
+y ahora si que si tenemos los tests funcionando!
+
+```bash
+npm test
+
+> test
+> jest
+
+ PASS  packages/mySecondPackage/__tests__/mySecondPackage.test.tsx
+  <Counter />
+    ✓ should display a hello world (13 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        1.425 s, estimated 2 s
+Ran all test suites.
+```
+
+9. Storybook
+___
+
+Vamos a a;adir la herramienta storybook que nos permitira mostrar lo chulo que son nuestros componentes, para ello vamos a ejecutar lo siguiente, dentro de una nueva carpeta llamada storybook, por que en otra y no en raiz? Pues porque al hacer hoist, nuestra dependencia de react-dom difiere de la necesaria por @storybook/react (https://github.com/storybookjs/storybook/blob/088ab2a96a799713098cee808e3c05a0d1484c49/app/react/package.json#L82) y esto nos puede causar problemas
+
+```bash
+npm i --save-dev vite
+npx sb init --builder storybook-builder-vite
+y
+react
+```
+
+Nos creara una carpeta de stories, la borramos, y nos dirijimos a `./storybook/main.js` y cambiamos donde busca las stories por lo siguiente:
+
+```js
+"../../packages/**/*.stories.mdx",
+"../../packages/**/*.stories.@(js|jsx|ts|tsx)"
+```
+
+Crear una story dentro de mySecondPackage/stories/mySecondPackage.story.tsx con 
+
+```tsx
+import { ComponentMeta, ComponentStoryObj } from "@storybook/react";
+import { Counter } from "../src/index";
+
+const meta: ComponentMeta<typeof Counter> = {
+  title: "Design System/MyButton",
+  component: Counter,
+};
+export default meta;
+
+export const Primary: ComponentStoryObj<typeof Counter> = {};
+```
+
+El linter nos dira que no puede encontrar `"@storybook/react"` , podemos instalarlo en dev si asi lo queremos para que no nos escupa pero la ejecucion funcionara correctamente sin problemas.
+
+para ello nos iremos a la carpeta de storybook y ejecutaremos
+
+```bash
+npm run storybook
+``` 
+
+y con esto ya tendremos nuestro div con hello world!
+
+
+10. Versionado de lerna
+___
+
+En lerna tenemos varios modos de versionar, o todos juntos de la mano (ej: proyecto de firebase) o cada paquete por separado

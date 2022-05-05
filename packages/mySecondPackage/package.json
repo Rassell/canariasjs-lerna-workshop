@@ -5,12 +5,8 @@
   "keywords": [],
   "author": "Gonzalo Soriano <sordesos@gmail.com>",
   "license": "ISC",
-  "main": "lib/mySecondPackage.js",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
-  },
   "dependencies": {
+    "myfirstpackage": "^1.0.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
   },
@@ -23,8 +19,11 @@
     "vite": "^2.9.8",
     "vite-plugin-dts": "^1.1.1"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "lib"
+    "dist",
+    "src"
   ],
   "repository": {
     "type": "git",
