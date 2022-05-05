@@ -646,3 +646,19 @@ esto puede ser cambiado especificando el flag `independent` en lerna.json
 para ello vamos a lerna.json y cambiamos el version de 0.0.2 a independent.
 
 Y lo mismo, nos vamos a mySecondPackage, volvemos a cambiar algo, commit y lerna build
+
+```bash
+lerna notice cli v4.0.0
+lerna info versioning independent
+lerna info Looking for changed packages since v0.0.2
+? Select a new version for mySecondPackage (currently 0.0.2) Patch (0.0.3)
+
+Changes:
+ - mySecondPackage: 0.0.2 => 0.0.3
+
+? Are you sure you want to create these versions? (ynH) 
+```
+
+Como vemos solo hace cambios en el paquete "esperado", esto va a question de gustos, la que mas rabia os de!
+
+
