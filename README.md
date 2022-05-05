@@ -333,6 +333,8 @@ export default defineConfig({
 });
 ```
 
+Como veis le hemos explicado a vite que nos ponga ciertas dependencias como externas, esto es xk queremos exprimir al maximo el peso de nuestros componentes (si, vite utiliza rollup por debajo, si no me equivoco y esbuild para trabajar, podriamos decir que coje lo mejor de cada casa!)
+
 Eliminaremos la carpeta que nos creo lerna de lib y crearemos una carpeta src con el fichero index.tsx con un componente basico de react:
 
 ```tsx
