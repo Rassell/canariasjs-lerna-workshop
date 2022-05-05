@@ -159,7 +159,25 @@ Para hacerlo mas real vamos agregar unos bundlers a nuestros paquetes.
 
 En mi caso voy a utilizar rollup y vite. Pero sois libres de utilizar cualquier otro bundler que vosotros quieras.
 
-Primero a;adiremos el rollap en myFirstPackage junto con algunos paquetes que necesitaremos:
+Aprovecharemos y utilizaremos el siguiente comando para a;adir dependencias a varios paquetes a la vez:
+
+```bash
+lerna add typescript --dev
+```
+
+y veremos como lo ha a;adido a varios paquetes:
+
+```bash
+info cli using local version of lerna
+lerna notice cli v4.0.0
+lerna info Adding typescript in 1 package
+lerna info Bootstrapping 2 packages
+lerna info Installing external dependencies
+lerna info Symlinking packages and binaries
+lerna success Bootstrapped 2 packages
+```
+
+Por otro lado a;adiremos el rollap en myFirstPackage junto con algunos paquetes que necesitaremos:
 
 ```
 cd packages/myFirstPackage
@@ -217,11 +235,11 @@ export function Hello(name: string) {
 
 No podemos olvidarnos de actualizar el package.json para que lanze el comando esperado!
 
- ```json
-  "scripts": {
-    "build": "rollup -c"
-  }
-  ```
+```json
+ "scripts": {
+   "build": "rollup -c"
+ }
+```
 
 Y sinceramente, esto no esta mal (quien no se siente orgulloso de lo que hace) pero nosotros queremos que lerna nos facilite el trabajo.
 Os imaginais tirar este comando por cada uno de los paquetes? seria un infierno!
@@ -247,8 +265,118 @@ lerna success run Ran npm script 'build' in 1 package in 0.8s:
 lerna success - myfirstpackage
 ```
 
+Ahora vamos a repetir el mismo proceso para nuestro segundo paquete, pero en este caso vamos a probar otro bundler, y por que no, otros commandos de lerna (para verlos):
+
+```bash
+lerna add vite --dev --scope=mySecondPackage
+```
+
+```bash
+cd packages/mySecondPackage
+npm i --save react react-dom
+npm i --save-dev @types/node @types/react @types/react-dom @vitejs/plugin-react typescript
+```
+
+Ahora vamos los ficheros de configuracion necesarios para que typescript y rollup funcionen:
+
+- Creamos tsconfig.json con lo siguiente:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+```
+
+- Otro tsconfig.node.json:
+
+```json
+{
+  "compilerOptions": {
+    "composite": true,
+    "module": "esnext",
+    "moduleResolution": "node"
+  },
+  "include": ["vite.config.ts"]
+}
+```
+
+- Creamos vite.config.ts con lo siguiente:
+
+```ts
+import react from "@vitejs/plugin-react";
+import * as path from "node:path";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    lib: {
+      entry: path.resolve(__dirname, "src/index.tsx"),
+      name: "lernaWorkshop",
+      formats: ["es", "umd"],
+      fileName: (format) => `lernaWorkshop.${format}.js`,
+    },
+    rollupOptions: {
+      external: ["react", "react-dom"],
+      output: {
+        globals: {
+          react: "React",
+          "react-dom": "ReactDOM",
+        },
+      },
+    },
+  },
+});
+```
+
+Eliminaremos la carpeta que nos creo lerna de lib y crearemos una carpeta src con el fichero index.tsx con un componente basico de react:
+
+```tsx
+export function Counter() {
+  return <div>hello world</div>
+}
+```
+
+Y como siempre a;adimos el commando esperado en nuestro package.json:
+
+```bash
+"build": "tsc && vite build"
+```
+
+y con esto vemos como nos compila vite nuestro paquete!
+
+```bash
+vite v2.9.8 building for production...
+✓ 9 modules transformed.
+dist/my-lib.es.js   1.35 KiB / gzip: 0.69 KiB
+dist/my-lib.umd.js   1.35 KiB / gzip: 0.78 KiB
+```
 
 
 x.a. A;adir turbo repo?
-_________________
-````
+
+---
+
+```
+
+```
+
+```
