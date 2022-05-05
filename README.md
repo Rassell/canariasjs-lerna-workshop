@@ -559,7 +559,52 @@ Time:        1.425 s, estimated 2 s
 Ran all test suites.
 ```
 
+9. Storybook
+___
+
+Vamos a a;adir la herramienta storybook que nos permitira mostrar lo chulo que son nuestros componentes, para ello vamos a ejecutar lo siguiente, dentro de una nueva carpeta llamada storybook, por que en otra y no en raiz? Pues porque al hacer hoist, nuestra dependencia de react-dom difiere de la necesaria por @storybook/react (https://github.com/storybookjs/storybook/blob/088ab2a96a799713098cee808e3c05a0d1484c49/app/react/package.json#L82) y esto nos puede causar problemas
+
+```bash
+npm i --save-dev vite
+npx sb init --builder storybook-builder-vite
+y
+react
+```
+
+Nos creara una carpeta de stories, la borramos, y nos dirijimos a `./storybook/main.js` y cambiamos donde busca las stories por lo siguiente:
+
+```js
+"../../packages/**/*.stories.mdx",
+"../../packages/**/*.stories.@(js|jsx|ts|tsx)"
+```
+
+Crear una story dentro de mySecondPackage/stories/mySecondPackage.story.tsx con 
+
+```tsx
+import { ComponentMeta, ComponentStoryObj } from "@storybook/react";
+import { Counter } from "../src/index";
+
+const meta: ComponentMeta<typeof Counter> = {
+  title: "Design System/MyButton",
+  component: Counter,
+};
+export default meta;
+
+export const Primary: ComponentStoryObj<typeof Counter> = {};
+```
+
+El linter nos dira que no puede encontrar `"@storybook/react"` , podemos instalarlo en dev si asi lo queremos para que no nos escupa pero la ejecucion funcionara correctamente sin problemas.
+
+para ello nos iremos a la carpeta de storybook y ejecutaremos
+
+```bash
+npm run storybook
+``` 
+
+y con esto ya tendremos nuestro div con hello world!
+
+
 10. Versionado de lerna
 ___
 
-En lerna tenemos varios 
+En lerna tenemos varios modos de versionar, o todos juntos de la mano (ej: proyecto de firebase) o cada paquete por separado
