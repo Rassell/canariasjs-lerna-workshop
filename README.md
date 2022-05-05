@@ -310,15 +310,21 @@ Ahora vamos los ficheros de configuracion necesarios para que typescript y rollu
 import react from "@vitejs/plugin-react";
 import * as path from "node:path";
 import { defineConfig } from "vite";
+import dts from "vite-plugin-dts";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    dts({
+      insertTypesEntry: true,
+    }),
+  ],
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/index.tsx"),
-      name: "lernaWorkshop",
-      formats: ["es", "umd"],
-      fileName: (format) => `lernaWorkshop.${format}.js`,
+      name: "index",
+      formats: ["umd"],
+      fileName: () => `index.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom"],
@@ -358,6 +364,68 @@ dist/my-lib.es.js   1.35 KiB / gzip: 0.69 KiB
 dist/my-lib.umd.js   1.35 KiB / gzip: 0.78 KiB
 ```
 
+Y por ultimo para terminar de pulir nuestros paques vamos a a;adir/cambiar estas definiciones del package.json
+
+```json
+  "main": "dist/{nombreDelPaquete}.js",
+  "types": "dist/{nombreDelPaquete}.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+```
+
+5. Probando nuestros paquetes
+___
+
+Ahora que ya tenemos nuestros paquetes creados vamos a probarlos para ver que todo funciona como esperamos.
+Para ello vamos a crear con vite un proyecto llamado testsite donde vamos a probar nuestros paquetes.
+
+```bash
+npm create vite@latest testsite -- --template react-ts
+```
+
+Y ahora, mientras no tengamos los paquetes publicados vamos a a;adirlos de manera local, para ello ejecutaremos lo siguiente:
+
+```bash
+cd testsite
+npm i
+npm i --save ../packages/myFirstPackage ../packages/mySecondPackage
+```
+
+con esto deberiamos de ver nuestros paquetes a;adidos en las dependencias de nuestro proyecto:
+
+```json
+"myfirstpackage": "file:../packages/myFirstPackage",
+"mySecondPackage": "file:../packages/mySecondPackage",
+```
+
+Y por ultimo como hemos puestos nuestros paquetes como umd (a vite no le molan), los a;adiremos en la config de vite
+
+```ts
+...
+optimizeDeps: {
+  include: ["myfirstpackage", "mySecondPackage"],
+},
+...
+```
+
+y con esto podremos utilizarlos tranquilamente en nuestra App.tsx:
+
+```tsx
+import { Counter } from "mySecondPackage";
+import { Hello } from "myfirstpackage";
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  Hello(count.toString());
+
+  return (
+    <div className="App">
+      <Counter />
+      <header className="App-header">
+```
 
 x.a. A;adir turbo repo?
 
