@@ -274,7 +274,7 @@ lerna add vite --dev --scope=mySecondPackage
 ```bash
 cd packages/mySecondPackage
 npm i --save react react-dom
-npm i --save-dev @types/node @types/react @types/react-dom @vitejs/plugin-react typescript
+npm i --save-dev @types/node @types/react @types/react-dom @vitejs/plugin-react vite-plugin-dts
 ```
 
 Ahora vamos los ficheros de configuracion necesarios para que typescript y rollup funcionen:
@@ -300,21 +300,7 @@ Ahora vamos los ficheros de configuracion necesarios para que typescript y rollu
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-}
-```
-
-- Otro tsconfig.node.json:
-
-```json
-{
-  "compilerOptions": {
-    "composite": true,
-    "module": "esnext",
-    "moduleResolution": "node"
-  },
-  "include": ["vite.config.ts"]
+  "include": ["src"]
 }
 ```
 
