@@ -486,3 +486,80 @@ y para terminar de confirmar que funciona correctamente ejecutaremos nuestro tes
 cd testsite
 npm run dev
 ```
+
+8. Testing
+___
+
+Ahora que ya tenemos nuestros componentes linkeados, vemos que todo funciona y encima no reinstalamos dependencias a lo loco. Todo va de lujooooo.
+Pero eh!? nos falta testear! para ello vamos a utilizar a nuestro amigo Jest para facilitarnos la tarea, para ello instalaremos lo siguiente en el root:
+
+```bash
+npm i --save-dev jest ts-jest jest-environment-jsdom @types/jest @testing-library/react @testing-library/jest-dom
+npx ts-jest config:init
+```
+
+esta configuracion inicial no esta mal pero necesitaremos modificarla un poco:
+
+```js
+/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+module.exports = {
+  preset: "ts-jest",
+  testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["@testing-library/jest-dom/extend-expect"],
+  globals: {
+    "ts-jest": {
+      tsconfig: "<rootDir>/packages/mySecondPackage/tsconfig.json",
+    },
+  },
+};
+```
+
+POR FAVOR crear un tsconfig a nivel de solucion y extender los paquetes de ese para entornos reales!
+
+Modificamos el fichero package.json para que ejecute los tests a;adiendo el siguiente commando:
+
+```json
+"test": "jest",
+```
+
+Y con esto nos vamos a `packages/mySecondPackage/__tests__`, recordar que esto ya nos lo creo lerna y renombramos el fichero que tenemos por *.tsx
+
+A;adimos lo siguiente:
+
+```tsx
+import { render, screen } from "@testing-library/react";
+
+import { Counter } from "../src/index";
+
+describe("<Counter />", () => {
+  test("should display a hello world", async () => {
+    render(<Counter />);
+
+    expect(screen.getByText(/hello world/i)).toBeInTheDocument();
+  });
+});
+```
+
+y ahora si que si tenemos los tests funcionando!
+
+```bash
+npm test
+
+> test
+> jest
+
+ PASS  packages/mySecondPackage/__tests__/mySecondPackage.test.tsx
+  <Counter />
+    ✓ should display a hello world (13 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        1.425 s, estimated 2 s
+Ran all test suites.
+```
+
+10. Versionado de lerna
+___
+
+En lerna tenemos varios 
