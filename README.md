@@ -215,13 +215,38 @@ export function Hello(name: string) {
 }
 ```
 
-Y no podemos olvidarnos de actualizar el package.json para que lanze el comando esperado!
+No podemos olvidarnos de actualizar el package.json para que lanze el comando esperado!
 
  ```json
   "scripts": {
     "build": "rollup -c"
   }
   ```
+
+Y sinceramente, esto no esta mal (quien no se siente orgulloso de lo que hace) pero nosotros queremos que lerna nos facilite el trabajo.
+Os imaginais tirar este comando por cada uno de los paquetes? seria un infierno!
+
+Para solucionar esto, lerna nos permite lanzar un commando especial que nos facilitara el trabajo.
+A;adiremos lo siguiente en los scripts de nuestro package.json principal:
+
+```bash
+"build": "lerna run build"
+```
+
+Esto nos permitira que lerna nos ayude a hacer el bundle de todos nuestros paquetes! Y con una facilidad, si el commando no existe en X paquete, no lo ejecuta tal como vemos en la ejecucion del comando.
+
+```bash
+lerna notice cli v4.0.0
+lerna info Executing command in 1 package: "npm run build"
+lerna info run Ran npm script 'build' in 'myfirstpackage' in 0.8s:
+
+> myfirstpackage@1.0.0 build
+> rollup -c
+
+lerna success run Ran npm script 'build' in 1 package in 0.8s:
+lerna success - myfirstpackage
+```
+
 
 
 x.a. A;adir turbo repo?
