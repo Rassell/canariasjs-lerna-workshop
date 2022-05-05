@@ -615,6 +615,11 @@ Para probarlo vamos a lanzar el comando de lerna para versionar (tener en cuenta
 lerna version
 ```
 
-en este caso como estoy editando el fichero readme, pongo el flag para que me ignore este fichero
+Este comando nos preguntara que version queremos poner (como en lerna.json tiene especificado el 0.0.0), patch, minor, major. en nuestro caso vamos a empezar con un patch.
 
+Acto seguido nos ense;ara los paquetes que va a modificar y si queremos hacerlo, en nuestro caso decimos que si
 
+Como vemos nos ha modificado los package.json con la version esperada.
+En este casoestamos usando el versionado general, es decir da igual si modificamos 1 que mil, todos subiran de version. para verlo, vamos a cambiar algo de mySecondPackage, myFirstPackage no tiene dependencias por lo tanto no subira, pero al hacer un versionado general, cambiara.
+
+Nos vamos a mySecondPackage y modificamos algo dentro del index.tsx, hacemos commit de los cambios y lanzamos lerna version

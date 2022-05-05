@@ -1,3 +1,3 @@
 export function Counter() {
-  return <div>hello world</div>;
+  return <div>hello worlds</div>;
 }
