@@ -12,6 +12,11 @@ Despues veremos como podemos interacturar con lerna mediante los distintos coman
 
 Tambien veremos que no sera necesario utilizar un unico bundler, ya que podremos utilizar uno por cada proyecto.
 
+0 Create repo
+___
+
+Antes de nada sera necesario crear el repo en nuestro repo manager de confianza
+
 1 Init Repo!
 
 ---
