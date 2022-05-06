@@ -668,7 +668,7 @@ Como vemos solo hace cambios en el paquete "esperado", esto va a question de gus
 
 Ahora vamos a por el siguiente y vamos a probar los conventional-commits!
 
-(despues de la explicacion de versionado, ejecutaremos)
+(despues de la explicacion de versionad hacemos un canvio en un paquete con commit `feat: test` y ejecutaremos)
 
 ```bash
 lerna version  --conventional-commits
